@@ -23,7 +23,7 @@ void AMovingPlatform::BeginPlay()
 void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	FString PlatformName = GetName();
 	//Move platform forwards
 		//Get current location
 	FVector CurrentLocation = GetActorLocation();
@@ -37,6 +37,8 @@ void AMovingPlatform::Tick(float DeltaTime)
 		//reverse direction of motiuon if gone too far
 	if (DistanceFromStart > MoveDistance)
 	{
+		float Overshoot = DistanceFromStart - MoveDistance;
+		UE_LOG(LogTemp, Display, TEXT("Distance overshoot of platform %s: %f"), *PlatformName, Overshoot)
 		FVector MoveDirection = PlatformVelocity.GetSafeNormal();
 		StartLocation = StartLocation + MoveDirection * MoveDistance;
 		SetActorLocation(StartLocation);
