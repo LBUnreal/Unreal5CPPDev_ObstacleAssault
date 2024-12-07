@@ -23,27 +23,42 @@ void AMovingPlatform::BeginPlay()
 void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FString PlatformName = GetName();
-	//Move platform forwards
-		//Get current location
-	FVector CurrentLocation = GetActorLocation();
-		//Add vector to that location
-	CurrentLocation = CurrentLocation + PlatformVelocity * DeltaTime;
-		//Set the location
-	SetActorLocation(CurrentLocation);
-	// Send platform back if gone too far
-		//Check how far we've moved
-	float DistanceFromStart = FVector::Distance(StartLocation, CurrentLocation);
-		//reverse direction of motiuon if gone too far
-	if (DistanceFromStart > MoveDistance)
+
+	MovePlatform(DeltaTime);
+	RotatePlatform(DeltaTime);
+}
+
+void AMovingPlatform::MovePlatform(float DeltaTime)
+{
+
+	if (ShouldPlatformReturn())
 	{
-		float Overshoot = DistanceFromStart - MoveDistance;
-		UE_LOG(LogTemp, Display, TEXT("Distance overshoot of platform %s: %f"), *PlatformName, Overshoot)
 		FVector MoveDirection = PlatformVelocity.GetSafeNormal();
 		StartLocation = StartLocation + MoveDirection * MoveDistance;
 		SetActorLocation(StartLocation);
 		PlatformVelocity = -PlatformVelocity;
 	}
-
+	else
+	{
+		FString PlatformName = GetName();
+		FVector CurrentLocation = GetActorLocation();
+		CurrentLocation = CurrentLocation + PlatformVelocity * DeltaTime;
+		SetActorLocation(CurrentLocation);
+	}
 }
 
+void AMovingPlatform::RotatePlatform(float DeltaTime)
+{
+	AddActorLocalRotation(RotationVelocity * DeltaTime);
+}
+
+bool AMovingPlatform::ShouldPlatformReturn() const
+{
+	return GetDistanceMoved() > MoveDistance;
+}
+
+float AMovingPlatform::GetDistanceMoved() const
+{
+	return FVector::Distance(StartLocation, GetActorLocation());
+
+}

@@ -30,5 +30,16 @@ public:
 	UPROPERTY(EditAnywhere, Category="Moving Platform")
 	float MoveDistance = 100;
 
+	UPROPERTY(EditAnywhere, Category="Rotate")
+	FRotator RotationVelocity;
+
 	FVector StartLocation;
+
+	void MovePlatform(float DeltaTime);
+
+	void RotatePlatform(float DeltaTime);
+
+	bool ShouldPlatformReturn() const;
+
+	float GetDistanceMoved() const;
 };
